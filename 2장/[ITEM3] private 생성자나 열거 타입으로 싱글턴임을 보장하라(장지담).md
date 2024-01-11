@@ -62,6 +62,71 @@ public enum Robot {
 - 직렬화하기 쉽다. enum은 기본적으로 serializable 하다. 결과로 constant의 이름을 얻는다.
 - 만드려는 싱글턴이 enum 외 다른 클래스를 상속해야 한다면 사용할 수 없다. (인터페이스는 가능하다)
 
+# 싱글턴 단점
+```java
+public class Robot {
+
+    public static final Robot INSTANCE = new Robot();
+
+    private int engine;
+
+    private Robot() {
+        engine = 10;
+    }
+
+    public void action() {
+        System.out.println("robot engine : " + engine--);
+    }
+}
+
+class Service {
+    private final Robot robot = Robot.INSTANCE;
+    public void test(){
+        robot.action();
+    }
+}
+```
+Robot을 가짜 구현인 Mock 객체로 만들어 테스트 할 수 없다. engine 필드값을 바꿔서 테스트하고 싶어도 불가능하다.
+```java
+public interface Robot {
+    public void action();
+}
+
+class RealRobot implements Robot {
+    public static final Robot INSTANCE = new RealRobot();
+
+    private int engine;
+
+    private RealRobot() {
+        engine = 10;
+    }
+
+    public void action() {
+        System.out.println("robot engine : " + engine--);
+    }
+}
+
+class MockRobot implements Robot {
+    public static final Robot INSTANCE = new MockRobot();
+
+    private int engine;
+
+    private MockRobot() {
+        engine = 10;
+    }
+
+    public void changeEngine(int value) {
+        engine = value;
+    }
+
+    public void action() {
+        System.out.println("robot engine : " + engine--);
+    }
+}
+```
+싱글턴을 테스트하기 위해서는 인터페이스를 선언하고 인터페이스를 구현하는 실제 싱글턴 객체와, mock 싱글턴 객체를 만들어야 한다. 
+
+
 
  
 
