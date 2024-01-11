@@ -22,7 +22,7 @@ public class Robot {
 예컨대 of는 여러 매개변수를 받아서 인스턴스를 반환한다는 의미를 나타낸다. 
 
 ## 호출될 떄마다 인스턴스를 새로 생성하지 않아도 된다
-```
+```java
 public class Robot {
     private int battery;
     private int power;
@@ -47,7 +47,7 @@ public class Robot {
 언제 어느 인스턴스를 살아있게 할지 통제하는 통제 클래스를 만들 수 있다.
 
 ## 반환 타입의 하위 타입 객체를 반환할 수 있다
-```
+```java
 public interface Test {
     public static Test getImpl() {
         return new TestImpl();
@@ -59,7 +59,7 @@ public interface Test {
 인터페이스를 정적 팩터리 메서드의 반환형으로 사용하는 것을 인터페이스 기반 프레임워크라 한다.
 
 ## 입력 매개변수에 따라 매번 다른 클래스의 객체를 반환할 수 있다
-```
+```java
     public static <E extends Enum<E>> EnumSet<E> noneOf(Class<E> elementType) {
         Enum<?>[] universe = getUniverse(elementType);
         if (universe == null)
@@ -85,7 +85,7 @@ EnumSet의 하위 클래스 객체를 반환하기면 하면 되며, 클라이�
  
 서비스 접근 API에서 정적 팩터리 메서드가 쓰인다. 
 서비스 사용자 프레임워크인 JDBC를 살펴보자.
-```
+```java
 // jdbc 연결하는 코드
 Class.forName("oracle.jdbc.driver.OracleDriver"); 
 Connection conn = null; 
@@ -93,7 +93,7 @@ conn = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:ORA92", "sc
 Statement..
 ```
 `DriverManager.getConnection`이 서비스 접근 API이다. 
-```
+```java
 public class DriverManager {
           	private DriverManager() {}
           	private static final Map<String,Driver> drivers = new ConcurrentHashMap<String,Driver>();
