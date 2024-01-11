@@ -3,7 +3,7 @@
 # 정적 팩터리 메서드의 장점
 
 ## 이름을 가질 수 있다
-```
+```java
 public class Robot {
     private int battery;
     private int power;
