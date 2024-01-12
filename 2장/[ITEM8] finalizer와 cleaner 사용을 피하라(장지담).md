@@ -131,8 +131,8 @@ PhantomCleanableRef의 performCleanUp 메서드로, Runnable 타입인 action의
 
 - garbage의 run이 호출되는 2가지 경우
   - 1. 클라이언트가 Robot의 `close()` 호출 -> `clean()` 호출 -> `run()` 호출
-      1) 클라이언트가 직접 Robot의 `close()` 호출
-      2) Robot을 try-catch-resource문으로 생성하면 `close()`는 자동 호출
+        1) 클라이언트가 직접 Robot의 `close()` 호출
+        2) Robot을 try-catch-resource문으로 생성하면 `close()`는 자동 호출
   - 2. GC가 Robot을 회수할 때 까지 클라이언트가 Robot `close()`를 호출하지 않으면 cleaner가 Garbage의 `run()` 호출
        - finalizer와 cleaner의 쓰임새인 안전망 역할
        - 시간 보장 X
