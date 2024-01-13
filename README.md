@@ -15,3 +15,9 @@
 
 > Readme에 적혀있는 규칙을 어길 시 커피를 산다.
 
+## Commit Convention
+- 작성 add 
+- 파일명 수정 rename
+- 내용 수정 fix
+- 삭제 remove
+PR은 안올리고 바로 main으로 push
