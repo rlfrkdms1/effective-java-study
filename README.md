@@ -23,5 +23,6 @@
 |rename|파일명 수정|
 |fix|파일 내용 수정|
 |remove|파일 삭제|
+|style|라인 정리 등 내용 외의 수정|
 
 PR 및 이슈 생성 없이 main으로 push
