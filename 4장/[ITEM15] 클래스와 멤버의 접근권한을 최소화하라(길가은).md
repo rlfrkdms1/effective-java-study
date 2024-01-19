@@ -186,9 +186,10 @@ public static final Thing[] values(){
 
 꼭 필요한 것만 골라 최소한의 public API를 설계하자. 그 외에는 클래스, 인터페이스, 멤버가 의도치 않게 API로 공개되는 일이 없도록 해야한다. public 클래스는 상수용 public static final 필드 외에는 어떠한 public 필드도 가져가서는 안된다. public sattic final 필드가 참조하는 객체가 불변인히 확인하라
 
-#### 출처ㅓ 
+#### 출처
 
 이펙티브 자바 3/E
+
 [리스코프 치환 원칙](https://ko.wikipedia.org/wiki/리스코프_치환_원칙)
 
 
