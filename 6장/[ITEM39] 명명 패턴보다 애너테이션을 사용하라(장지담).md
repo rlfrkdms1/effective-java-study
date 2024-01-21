@@ -18,3 +18,16 @@
    - 메서드 이름에 예외를 붙여도 컴파일러는 그것이 예외명인지 알 수 없다
   
 # 애너테이션 
+애너테이션은 명명 패턴의 단점을 해결해준다. 
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Test {
+}
+```
+- 메타애너테이션 : 애너테이션 선언에 다는 애너테이션
+  - `@Retention(RetentionPolicy.RUNTIME)` : `@Test`가 런타임에도 유지된다. 런타임에 유지되어야 테스트 도구가 인식할 수 있다.
+  - `@Target(ElementType.METHOD)` : `@Test`가 메서드에만 사용되어야 한다. 클래스, 필드 등에는 사용할 수 없다.
+- 마커애너테이션 : 아무 매개변수 없이 대상에 단순히 마킹하는 애너테이션, `@Test`
+- `@Test` 애너테이션을 테스트 대상 메서드에 달아준다. 애너테이션을 사용하면 `@Tset`와 같이 오타가 발생하거나, 필드에 애너테이션을 달면 컴파일 오류가 난다.
+
