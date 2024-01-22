@@ -341,8 +341,168 @@ toString 을 재정의해 연산을 뜻하는 기호를 반환하도록 해보�
 
 ### 상수별 메서드 구현에는 열거 타입 상수끼리 코드를 공유하기 어렵다.
 
+```java
+package chap6;
+
+public enum PayrollDay {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY;
+    
+    private static final int MINS_PER_SHIFT = 8 * 60;
+
+    int pay(int minutesWorked, int payRate) {
+        int basePay = minutesWorked * payRate;
+        
+        int overtimePay;
+        switch (this) {
+            case SATURDAY: case SUNDAY:
+                overtimePay = basePay / 2;
+                break;
+            default:
+                overtimePay = minutesWorked <= MINS_PER_SHIFT ? 0 : (minutesWorked - MINS_PER_SHIFT) * payRate / 2;
+        }
+        return basePay + overtimePay;
+    }
+}
+```
+위와 같이 기본 임금과, 일한 시간이 주어졌을 때 일당을 계산해주는 메서드를 갖고 있는 열거타입이 있다고 해보자. 주말에는 무조건 잔업 수당이 주어져 switch문으로 이를 해결할 수 있다. 위 코드는 간결해보이지만, 관리관점에서는 위험한 코드다. 휴가와 같은 새로운 값을 열거 타입에 추가하려면 그 값을 처리하는 case 문을 잊지 말고 넣어줘야한다.
+
+```java
+package chap6;
+
+public enum PayrollDay {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY, HOLIDAY,;
+
+    private static final int MINS_PER_SHIFT = 8 * 60;
+
+    int pay(int minutesWorked, int payRate) {
+        int basePay = minutesWorked * payRate;
+
+        int overtimePay;
+        switch (this) {
+            case SATURDAY: case SUNDAY: case HOLIDAY:
+                overtimePay = basePay / 2;
+                break;
+            default:
+                overtimePay = minutesWorked <= MINS_PER_SHIFT ? 0 : (minutesWorked - MINS_PER_SHIFT) * payRate / 2;
+        }
+        return basePay + overtimePay;
+    }
+}
+```
+case문을 깜빡한다면 예상과는 다른 급여를 받게 될 것이다. 
+
+```java
+package chap6;
+
+public enum PayrollDay {
+    MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY, HOLIDAY,;
+
+    private static final int MINS_PER_SHIFT = 8 * 60;
+
+    int pay(int minutesWorked, int payRate) {
+        int basePay = minutesWorked * payRate;
+
+        int overtimePay;
+        switch (this) {
+            case SATURDAY: case SUNDAY: 
+                overtimePay = basePay / 2;
+                break;
+            default:
+                overtimePay = minutesWorked <= MINS_PER_SHIFT ? 0 : (minutesWorked - MINS_PER_SHIFT) * payRate / 2;
+        }
+        return basePay + overtimePay;
+    }
+}
+```
+위와 같이 case문을 빼먹어도 잘 컴파일 되기 때문에 알아차리기 쉽지 않다. 그렇다면 이를 개선할 방법은 두가지다. 첫째, 잔업수당을 계산하는 코드를 모든 상수에 중복해서 넣으면 된다. 둘째, 계산 코드를 평일용과 주말용으로 나눠 각각을 도우미 메서드로 작성한 다음 각 상수가 자신에게 필요한 메서드를 적절히 호출하면 된다. 
+
+하지만 위의 두 방법은 가독성이 크게 떨어지고 오류 발생 가능성이 높아진다.
+
+따라서 잔업 수당 계산을 private 중첩 열거 타입으로 옮기고 PayrollDay 열거 타입의 생성자에서 이 중 적당한 것을 선택하면 된다. 아래의 코드를 보자. 
+
+```java
+enum PayrollDay {
+    MONDAY(WEEKDAY), TUESDAY(WEEKDAY), WEDNESDAY(WEEKDAY),
+    THURSDAY(WEEKDAY), FRIDAY(WEEKDAY),
+    SATURDAY(WEEKEND), SUNDAY(WEEKEND);
+
+    private final PayType payType;
+
+    PayrollDay(PayType payType) { this.payType = payType; }
+    // PayrollDay() { this(PayType.WEEKDAY); } // (역자 노트) 원서 4쇄부터 삭제
+    
+    int pay(int minutesWorked, int payRate) {
+        return payType.pay(minutesWorked, payRate);
+    }
+
+    // 전략 열거 타입
+    enum PayType {
+        WEEKDAY {
+            int overtimePay(int minsWorked, int payRate) {
+                return minsWorked <= MINS_PER_SHIFT ? 0 :
+                        (minsWorked - MINS_PER_SHIFT) * payRate / 2;
+            }
+        },
+        WEEKEND {
+            int overtimePay(int minsWorked, int payRate) {
+                return minsWorked * payRate / 2;
+            }
+        };
+
+        abstract int overtimePay(int mins, int payRate);
+        private static final int MINS_PER_SHIFT = 8 * 60;
+
+        int pay(int minsWorked, int payRate) {
+            int basePay = minsWorked * payRate;
+            return basePay + overtimePay(minsWorked, payRate);
+        }
+    }
+
+    public static void main(String[] args) {
+        for (PayrollDay day : values())
+            System.out.printf("%-10s%d%n", day, day.pay(8 * 60, 1));
+    }
+}
+```
+PayrollDay 열거 타입은 잔업수당 계산을 전략 열거 타입에 위임해 switch문이나 상수별 메서드 구현이 필요없게 되었다. 따라서 이 패턴이 switch문 보다는 복잡하지만 더 안전하고 유연하다. 
+
+하지만, 기존 열거 타입에 상수별 동작을 혼합해 넣을 때는 switch문이 좋은 선택이 될수 있다. 아래와 같은 상황일 때다. 
+
+```java
+public class Inverse {
+    public static Operation inverse(Operation op) {
+        switch(op) {
+            case PLUS:   return Operation.MINUS;
+            case MINUS:  return Operation.PLUS;
+            case TIMES:  return Operation.DIVIDE;
+            case DIVIDE: return Operation.TIMES;
+
+            default:  throw new AssertionError("Unknown op: " + op);
+        }
+    }
+
+    public static void main(String[] args) {
+        double x = Double.parseDouble(args[0]);
+        double y = Double.parseDouble(args[1]);
+        for (Operation op : Operation.values()) {
+            Operation invOp = inverse(op);
+            System.out.printf("%f %s %f %s %f = %f%n",
+                    x, op, y, invOp, y, invOp.apply(op.apply(x, y), y));
+        }
+    }
+}
+```
+추가하려는 메서드가 의미상 열거 타입에 속하지 않는다면 직접 만든 열거 타입이라도 이 방식을 적용하는게 좋다. 
+
+### 언제 쓸까?
+
+#### 필요한 원소를 컴파일 타임에 알 수 있는 상수 집합이라면 항상 열거 타입을 사용하자. 
+
+#### 열거 타입에 정의된 상수 개수가 영원히 고정 불변일 필요는 없다.
 
 
+#### 출처
 
-
+이펙티브 자바 3/E
+[이펙티브 자바 github](https://github.com/WegraLee/effective-java-3e-source-code/tree/master)
 
