@@ -150,7 +150,7 @@ public class Robot implements Cloneable {
 
 # 주의점
 - 생성자에서는 재정의 될 수 있는 메서드를 호출하지 않아야 한다.(ITEM19) clone도 마찬가지다.
-  - 상위클래스의 clone에서 하위 클래스에서 재정의 한 메서드를 호출하면 하위 클래스에서 호출한 super.clone에서는 하위 클래스에서 재정의 한 메서드가 아닌 상위 클래스의 메서드에 따라 복제되고 하위 클래스는 자신의 상태를 교정할 기회를 잃는다.
+  - 상위클래스의 clone에서 하위 클래스에서 재정의 한 메서드를 호출하면 하위 클래스에서 호출한 super.clone에서는 하위 클래스에서 재정의 한 메서드를 호출한다. 따라서 동작을 예상할 수 없다. 
   - clone에서 호출하는 고수준 api는 final이거나(재정의하지 못하므로) private이어야 한다(하위 클래스에서 호출하지 못하므로).
 - Object의 clone은 CloneNotSupportedException을 던진다. clone을 재정의 한 메서드에서는 throws를 없애고 try-catch로 잡아주는 편이 사용하기 편하다.
 - 상속해서 쓰기 위한 클래스(상속용 클래스)에서는 Cloneable을 구현하면 안된다
