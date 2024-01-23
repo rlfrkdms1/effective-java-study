@@ -7,6 +7,7 @@
 |---|----|
 |String 이 Object의 서브타입이면, `List<String>`은 `List<? extend Object>` 의 서브타입이다.|`List<String>`은 `List<Object>`의 하위타입이 아니다. |
 
+
 ```java
 Object[] objects = new Long[1];
 objects[0] = "못 넣는다.";
