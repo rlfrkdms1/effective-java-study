@@ -12,6 +12,10 @@ public class Example {
         public void access() {
             Example example = new Example();
             example.value = 10;
+
+            PrivateEx privateEx = new PrivateEx();
+            privateEx.access();
+            System.out.println("PublicEx.access");
         }
     }
 
@@ -19,9 +23,11 @@ public class Example {
         public void access() {
             Example example = new Example();
             example.value = 5;
+            System.out.println("PrivateEx.access");
         }
     }
 }
+
 ```
 바깥 클래스의 private 멤버에도 접근할 수 있음을 알 수 있다.
 ![](https://velog.velcdn.com/images/rlfrkdms1/post/01fcba70-4a6b-42ff-aad7-e1be8fcda15e/image.png)
