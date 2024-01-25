@@ -1,5 +1,5 @@
 # 스트림 병렬화를 주의해서 사용하라
-- 병렬화는 여러 작업이 동시에 처리되는 것이다.
+- 병렬화는 여러 작업이 동시에 처리되는 것이다. Stream에서 `pararrel()`메서드로 사용한다. 
 - 데이터 소스가 stream.iterate거나 중간 연산으로 limit을 쓰면 파이프라인 병렬화로 성능 개선을 기대할 수 없다.
 
 ### 스트림을 잘못 병렬화하면 성능이 나빠지고 결과가 잘못되고 예상치 못한 동작이 발생한다. 
@@ -35,5 +35,14 @@
 
 > 조건이 잘 갖춰지면 parallel 메서드 호출 하나로 거의 프로세서 코어 수에 비례하는 성능 향상을 만끽할 수 있다. 
 
+```java
+    static long pi(long n) {
+        return LongStream.rangeClosed(2, n)
+                .parallel()
+                .mapToObj(BigInteger::valueOf)
+                .filter(i -> i.isProbablePrime(50))
+                .count();
+    }
+```
 
 
