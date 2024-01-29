@@ -56,4 +56,109 @@ public class CardGame {
 - 각 세터는 매개변수 하나 혹은 연관된 몇 개만 설정하게 한다.
 - 클라이언트는 필요한 매개변수를 다 설정한 후 execute를 호출해 매개변수들의 유효성을 검사한다. 설정이 완료된 매개변수 객체를 넘겨 계산을 수행한다.
 
+```java
+public class Person {
+    int age;
+    String name;
+    String address;
+
+    private Person(Builder builder) {
+        this.age = builder.age;
+        this.name = builder.name;
+        this.address = builder.address;
+    }
+
+    public static Builder builder(int age, String name) {
+        return new Builder(age, name);
+    }
+
+    public static class Builder {
+        int age;
+        String name;
+        String address;
+
+        public Builder(int age, String name) {
+            this.age = age;
+            this.name = name;
+        }
+
+        public Builder address(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public Person execute() {
+            if (age <= 0 || name == null) {
+                throw new IllegalArgumentException("invalid data");
+            }
+            return new Person(this);
+        }
+    }
+}
+```
+
+```java
+public class Client {
+    public static void main(String[] args) {
+        CardGame cardGame = new CardGame(Person.builder(26, "jidam").address("강동구").execute(), 10);
+    }
+}
+```
+
 ### 매개변수 타입은 클래스보다 인터페이스가 낫다. 
+- HashMap이 아닌 Map을 사용하면 TreeMap, ConcurrentHashMap 등 어떤 Map 구현체도 인수로 건넬 수 있다.
+- 클래스를 사용하면 특정 구현체만 사용하도록 제한하게 된다.
+
+### boolean보다는 원소 2개짜리 열거 타입이 낫다.
+- 메서드 이름 상 boolean을 받아야 의미가 더 명확할 때는 제외
+```java
+    public void therapy(boolean isPerson){
+
+    }
+
+    public void therapy(Type type){
+        
+    }
+```
+
+```java
+public enum Type {
+    Person, Animal;
+}
+```
+- 사람인지 아닌지를 boolean보다 Type 열거형으로 사용하자.
+```java
+        
+        // 명확하지 않다 
+        hospital.therapy(true);
+        
+        // 명확하다
+        hospital.therapy(Type.Person);
+        hospital.therapy(Type.Animal);
+```
+- 무슨 일을 하는지 명확하다.
+
+```java
+public enum Type {
+    Person{
+        @Override
+        void introduce() {
+            System.out.println("저는 사람입니다. 아파서 왔어요.");
+        }
+    }, Animal{
+        @Override
+        void introduce() {
+            System.out.println("저는 동물입니다. 아파서 왔어요.");
+        }
+    }, Aliean{
+        @Override
+        void introduce() {
+            System.out.println("저는 외계인입니다. 아파서 왔어요.");
+        }
+    };
+    
+    abstract void introduce();
+}
+```
+- 추후에 외계인도 포함하게 된다면 enum에 추가해주면 되므로 확장이 쉽다.
+- 열거타입별로 필요한 메서드를 열거타입에 넣을 수 있다.
