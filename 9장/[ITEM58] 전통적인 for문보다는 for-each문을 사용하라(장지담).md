@@ -56,6 +56,51 @@ for each문은 향상된 for문이다.
 
 # for-each를 사용할 수 없는 경우 
 ### 파괴적인 필터링 
-- 컬렉션을 순회하면서 선택된 원소를 제거하려면 반복자의 remove를 호출해야 한다. 
-- java8부터 Collection의 removeIf를 사용할 수 있다. 
+- 컬렉션을 순회하면서 선택된 원소를 제거하려면 반복자의 remove를 호출해야 한다.
+```java
+        List<Integer> list = new ArrayList<>();
+        for (Iterator<Integer> it = list.iterator(); it.hasNext(); ) {
+            Integer i = it.next();
+            if (i % 3 == 0) {
+                it.remove();
+            }
+        }
 
+        //removeIf 사용 : 명시적 순회가 필요없다 
+        list.removeIf(i -> i % 3 == 0);
+
+```
+- java8부터 Collection의 removeIf를 사용하면 컬렉션을 명시적으로 순회할 필요가 없다.
+
+    
+### 변형
+```java
+        for (Robot robot : list) {
+            if (robot.getPower() == 1) {
+                // robot.setPower(10);
+                robot = new Robot(10);
+            }
+        }
+        System.out.println(list); //원소가 교체되지 않음!
+
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getPower() == 1) {
+                list.set(i, new Robot(10));
+            }
+        }
+        System.out.println(list);
+```
+- forEach에서는 원소를 교체할 수 없다.
+- 반복자나 인덱스를 사용해야 원소를 교체할 수 있다. 
+
+### 병렬 반복 
+- 여러 컬렉션을 병렬로 순회한다면 각각의 반복자, 인덱스 변수를 사용한다.
+```java
+        for (Iterator<Robot> it1 = list1.iterator(), it2 = list2.iterator(); it1.hasNext() && it2.hasNext();) {
+            
+        }
+```
+
+---
+
+> Iterable을 구현한 모든 클래스에 for-each를 적용할 수 있다. 
