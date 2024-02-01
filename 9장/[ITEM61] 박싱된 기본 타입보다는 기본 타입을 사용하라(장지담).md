@@ -30,7 +30,10 @@ public class Main {
 ```
 - `i==num`에서 NPE가 발생한다. Integer의 초기값이 null이기 때문이다.
 - 박싱된 기본 타입과 기본 타입을 혼용한 연산에서 박싱된 기본 타입의 박싱이 자동으로 풀렸고, null을 언박싱하며 NPE가 발생한 것이다. 
-3. 기본 타입이 박싱된 기본 타입에 비해 시간, 메모리 효율적이다. 
+3. 기본 타입이 박싱된 기본 타입에 비해 시간, 메모리 효율적이다.
+
+---
+
 ```java
     public static void main(String[] args) {
         Integer sum = 0;
