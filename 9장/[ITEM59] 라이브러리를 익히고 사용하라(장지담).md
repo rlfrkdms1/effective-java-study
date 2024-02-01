@@ -10,15 +10,16 @@
 1. n이 그리 크지 않은 2의 제곱수라면 얼마 지나지 않아 같은 수열이 반복된다.
 - linear congruential generator의 성질이다. (참고 : https://stackoverflow.com/questions/27779177/effective-java-item-47-know-and-use-your-libraries-flawed-random-integer-meth)
 2. n이 2의 제곱수가 아니라면 몇몇 숫자가 평균적으로 더 자주 반복된다.
+
 nextInt가 0,1,2,3을 반환한다고 가정하자. 
 - 2의 제곱수가 아닌 %3을 하면 0,1,2,0을 얻는다. 0이 자주 반복된다.
 - 2의 제곱수인 %2를 하면 0,1,0,1을 얻는다. 0과 1을 같은 빈도로 얻는다. 
 3. 지정한 범위 바깥의 수가 종종 튀어나올 수 있다.
-- INTEGER.MIN_VAL : -2_147_483_648, INTEGER.MAX_VAL : 2_147_483_647
-- Math.abs(INTEGER.MIN_VAL) = 2_147_483_648으로 int 범위를 초과해 오버플로에 의해 최솟값인 -2_147_483_648로 돌아간다. 
+- `INTEGER.MIN_VAL` : -2_147_483_648, `INTEGER.MAX_VAL` : 2_147_483_647
+- Math.abs(`INTEGER.MIN_VAL`) = 2_147_483_648으로 int 범위를 초과해 오버플로에 의해 최솟값인 -2_147_483_648로 돌아간다. 
 
 # 표준 라이브러리를 사용하자 
-`Random.nextInt(int)`를 사용하면 위의 문제들을 해결해준다.
+위 문제들을 직접 해결하기에는 너무 어렵다. `Random.nextInt(int)`를 사용하면 위의 문제들을 해결해준다.
 
 표준 라이브러리는
 - 전문가, 다른 프로그래머들의 지식을 활용할 수 있다.
