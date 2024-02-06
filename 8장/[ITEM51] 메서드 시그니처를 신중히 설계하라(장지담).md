@@ -57,50 +57,16 @@ public class CardGame {
 - 클라이언트는 필요한 매개변수를 다 설정한 후 execute를 호출해 매개변수들의 유효성을 검사한다. 설정이 완료된 매개변수 객체를 넘겨 계산을 수행한다.
 
 ```java
-public class Person {
-    int age;
-    String name;
-    String address;
+public class CardGame {
 
-    private Person(Builder builder) {
-        this.age = builder.age;
-        this.name = builder.name;
-        this.address = builder.address;
-    }
-
-    public static Builder builder(int age, String name) {
-        return new Builder(age, name);
-    }
-
-    public static class Builder {
-        int age;
-        String name;
-        String address;
-
-        public Builder(int age, String name) {
-            this.age = age;
-            this.name = name;
-        }
-
-        public Builder address(String address) {
-            this.address = address;
-            return this;
-        }
-
-        public Person execute() {
-            if (age <= 0 || name == null) {
-                throw new IllegalArgumentException("invalid data");
-            }
-            return new Person(this);
-        }
+    public void inputPerson(Person person) {
     }
 }
 ```
 
 ```java
 public class Client {
-    public static void main(String[] args) {
-        CardGame cardGame = new CardGame(Person.builder(26, "jidam").address("강동구").execute(), 10);
+      cardGame.inputPerson(Person.builder().name("jidam").age(26).execute());
     }
 }
 ```
