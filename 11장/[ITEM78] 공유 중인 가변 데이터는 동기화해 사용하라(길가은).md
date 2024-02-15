@@ -63,6 +63,8 @@ while문의 `stopRequested`를 통해 반복문을 제어하고 있다.
 ```
 따라서 stopReqeusted의 값이 바뀌어도 while문은 멈추지 않는것이다. 따라서 동기화를 사용해 아래와 같이 변경하자. 
 
+### synchronized
+
 ```java
 public class StopThread {
     private static boolean stopRequested;
@@ -93,6 +95,7 @@ public class StopThread {
 
 따라서 쓰기와 읽기 모두가 동기화되지 않으면 동작을 보장하지 않음을 기억하자 !
 
+### volatile
 다른 대안이 또 존재한다. 바로 volatile이다. 필드를 volatile로 선언하면 동기화를 생략해도 된다. 이는 배타적 수행과는 상관없지만 항상 최근에 기록된 값을 읽게 됨을 보장한다. 
 ```java
 public class StopThread {
@@ -122,3 +125,44 @@ public class StopThread {
         return nextSerialNumber++;
     }
 ```
+위의 generateSerialNumber메서드는 nextSerialNumber를 반환하는 메서드이다. 아무런 문제가 없어보이지만, 증가연산자 때문에 올바르게 동작하지 않는다. 증가 연산자는 값을 읽을 때 한 번, 값을 저장할 때 한 번으로 총 두번 필드에 접근한다. 따라서 다음과 같은 상황이라면 문제가 생기는 것이다. 
+
+nextSerialNumber는 현재 0이며, 1번과 2번 스레드가 돌아간다고 가정하자. 
+
+1. 1번 스레드가 nextSerialNumber를 읽는다. 
+2. 2번 스레드가 nextSerialNumber를 읽는다. 
+3. 1번 스레드가 1을 더한 값을 저장한다. 즉, nextSerialNumber는 1이된다. 
+4. 2번 스레드가 읽은 값에서 1을 더한 값을 저장한다. 즉, nextSerialNumber는 1이된다. 
+
+위와 같이 첫번째 스레드가 연산을 진행하고 있는 사이에 두번째 스레드가 접근한다면, 올바른 결과값이 나오지 않게되는 것이다. 이렇게 프로그램이 잘못된 결과를 계산해내는 오류를 안전 실패라고 한다. 
+
+이는 synchronized를 메서드에 붙이면 해결된다. synchronized를 붙였다면 필드에 있는 volatile은 제거해야한다. 
+
+## AtomicLong
+
+락 없이도 스레드 안전한 프로그래밍을 지원하는 클래스가 담긴 AtomicLong을 사용해보자. 
+
+```java
+    private static final AtomicLong nextSerialNumber = new AtomicLong();
+
+    public static long generateSerialNumber(){
+        return nextSerialNumber.getAndIncrement();
+    }
+```
+이는 원자성과 통신 모두를 지원한다. 
+
+## 가장 좋은 방법
+> 이러한 문제들을 피하는 가장 좋은 방법은 가변 데이터를 공유하지 않는것이다. 
+
+따라서 가변 데이터는 단일 스레드에서만 쓰도록 하자. 
+
+
+한 스레드가 데이터를 다 수정한 후 다른 스레드에 공유할 땐 해당 객체에서 공유하는 부분만 동기화해도 된다. 이러면 수정전까지 다른 스레드들이 동기화없이 값을 읽어갈 수 있다. 이런 객체를 사실상 불변이라 하고, 다른 스레드에 이런 객체를 건네는 행위를 안전발행이라고 한다. 
+
+객체를 안전하게 발행하는 방법
+- 클래스 초기화 과정에서 객체를 정적 필드, volatile 필드, final 필드, 보통의 락을 통해 접근하는 필드에 저장
+- 동시성 컬렉션에 저장
+
+#### 출처
+
+이펙티브 자바 3/E
