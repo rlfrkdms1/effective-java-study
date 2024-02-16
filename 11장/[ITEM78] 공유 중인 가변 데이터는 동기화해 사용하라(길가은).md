@@ -57,8 +57,8 @@ while문의 `stopRequested`를 통해 반복문을 제어하고 있다.
 ```
 위와 같으나, 이는 아래와 같이 최적화된다. 
 ```java
-		if(!stopRequested)
-            while (!stopRequested)
+	if(!stopRequested)
+            while (true)
                 i++;
 ```
 따라서 stopReqeusted의 값이 바뀌어도 while문은 멈추지 않는것이다. 따라서 동기화를 사용해 아래와 같이 변경하자. 
