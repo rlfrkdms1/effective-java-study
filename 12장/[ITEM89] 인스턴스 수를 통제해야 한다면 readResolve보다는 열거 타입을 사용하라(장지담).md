@@ -78,7 +78,7 @@ public class RobotImpersonator {
     };
     public static void main(String[] args) {
         Robot robot = (Robot) deserialize(serializedForm);
-        Robot impersonator = Robot.impersonator;
+        Robot impersonator = RobotStealer.impersonator;
     }
 }
 ```
